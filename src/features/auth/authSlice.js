@@ -1,17 +1,17 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { createUserWithEmailAndPassword, sendPasswordResetEmail, signInWithEmailAndPassword, signInWithPopup, signOut, updateProfile } from 'firebase/auth';
-import auth from '../../firebase/firebase.init';
+import auth from 'firebase/firebase.init';
 
 // Initial state
 const initialState = {
   user: null,
-  loading: false,
+  isLoading: false,
   email: '',
+  isError: false,
   error: null,
 };
 
 // Async Thunks
-
 export const registerUser = createAsyncThunk('auth/registerUser', async ({ email, password }, thunkAPI) => {
   try {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
@@ -67,7 +67,6 @@ export const resetPassword = createAsyncThunk('auth/resetPassword', async (email
 });
 
 // Slice
-
 const authSlice = createSlice({
   name: 'auth',
   initialState,
@@ -79,24 +78,94 @@ const authSlice = createSlice({
       state.user = action.payload;
     },
     setLoading(state, action) {
-      state.loading = action.payload;
+      state.isLoading = action.payload;
     },
   },
   extraReducers: (builder) => {
     builder
       .addCase(registerUser.pending, (state) => {
-        state.loading = true;
-        state.error = null;
+        state.isLoading = true;
+        state.isError = false;
       })
       .addCase(registerUser.fulfilled, (state, action) => {
-        state.loading = false;
+        state.isLoading = false;
         state.user = action.payload;
       })
       .addCase(registerUser.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
+        state.isLoading = false;
+        state.isError = true;
+        state.error = action.error?.message;
       });
-    // Repeat similar for loginUser, logoutUser, etc...
+    builder
+      .addCase(loginUser.pending, (state) => {
+        state.isLoading = true;
+        state.isError = false;
+      })
+      .addCase(loginUser.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.user = action.payload;
+      })
+      .addCase(loginUser.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.error = action.error?.message;
+      });
+    builder
+      .addCase(socialAuth.pending, (state) => {
+        state.isLoading = true;
+        state.isError = false;
+      })
+      .addCase(socialAuth.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.user = action.payload;
+      })
+      .addCase(socialAuth.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.error = action.error?.message;
+      });
+    builder
+      .addCase(logoutUser.pending, (state) => {
+        state.isLoading = true;
+        state.isError = false;
+      })
+      .addCase(logoutUser.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.user = action.payload;
+      })
+      .addCase(logoutUser.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.error = action.error?.message;
+      });
+    builder
+      .addCase(updateUserProfile.pending, (state) => {
+        state.isLoading = true;
+        state.isError = false;
+      })
+      .addCase(updateUserProfile.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.user = action.payload;
+      })
+      .addCase(updateUserProfile.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.error = action.error?.message;
+      });
+    builder
+      .addCase(resetPassword.pending, (state) => {
+        state.isLoading = true;
+        state.isError = false;
+      })
+      .addCase(resetPassword.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.user = action.payload;
+      })
+      .addCase(resetPassword.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.error = action.error?.message;
+      });
   },
 });
 
