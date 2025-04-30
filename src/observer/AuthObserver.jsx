@@ -1,9 +1,10 @@
 import axios from 'axios';
 import { onAuthStateChanged } from 'firebase/auth';
+
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
+import auth from '../firebase/firebase.init';
 import { setLoading, setUser } from './features/auth/authSlice';
-import auth from './Firebase/Firebase.init';
 
 const AuthObserver = () => {
   const dispatch = useDispatch();
